@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modron Alpha - Bot de RPG para Discord!</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gradient-to-br from-[#0b0d10] via-[#11131a] to-[#0f1115] text-gray-200 min-h-screen">
+
+<div class="container max-w-7xl mx-auto px-6 py-10">
+    <header class="text-center mb-14 relative">
+        <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-indigo-600/10 blur-3xl rounded-full"></div>
+
+        <div class="bot-title flex justify-center items-center gap-4 mb-4">
+            <div class="w-12 h-12 rounded-full bg-indigo-600/20 flex items-center justify-center border border-indigo-400/40 shadow-lg shadow-indigo-500/20">
+                <i class="fas fa-robot text-indigo-400 text-xl"></i>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-widest bg-gradient-to-r from-white to-indigo-400 bg-clip-text text-transparent">
+                MODRON ALPHA
+            </h1>
+        </div>
+
+        <div class="version-badge inline-block bg-indigo-600/20 border border-indigo-500/40 text-indigo-300 px-4 py-1 rounded-full text-sm mb-4">
+            VERSÃO DE TESTE
+        </div>
+
+        <p class="tagline text-indigo-300 text-lg">Assistente Robótico de RPG</p>
+    </header>
+
+    <div class="content-wrapper grid lg:grid-cols-3 gap-8">
+        <main class="main-content lg:col-span-2 space-y-6">
+            <div class="chat-container bg-gradient-to-br from-[#2f3136] to-[#26282d] rounded-2xl border border-white/5 shadow-2xl overflow-hidden">
+
+                <div class="chat-header bg-[#202225] px-4 py-3 flex items-center gap-3 border-b border-white/5">
+                    <i class="fas fa-circle text-green-400 text-xs"></i>
+                    <h3 class="text-white font-semibold">#chat-geral</h3>
+
+                    <button id="toggleSlashPanel"
+                        class="ml-auto flex items-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 px-3 py-1.5 rounded-lg text-sm transition border border-indigo-500/30">
+                        <i class="fas fa-terminal"></i>
+                        /Comandos Slash
+                    </button>
+                </div>
+                <div class="slash-commands-panel hidden bg-black/30 border-b border-white/5 p-4 space-y-2"
+                     id="slashCommandsPanel">
+                    <h4 class="text-indigo-400 font-semibold mb-2"><i class="fas fa-slash"></i> Comandos de Inventário</h4>
+
+                    <div class="slash-command-item bg-black/20 hover:bg-black/30 p-2 rounded cursor-pointer" data-command="/criar_inventario">
+                        <i class="fas fa-plus-circle text-green-400 mr-2"></i> criar_inventario
+                        <div class="command-format text-xs text-gray-400">/criar_inventario nome_do_personagem</div>
+                    </div>
+
+                    <div class="slash-command-item bg-black/20 hover:bg-black/30 p-2 rounded cursor-pointer" data-command="/ver_inventario">
+                        <i class="fas fa-eye text-blue-400 mr-2"></i> ver_inventario
+                    </div>
+
+                    <div class="slash-command-item bg-black/20 hover:bg-black/30 p-2 rounded cursor-pointer" data-command="/adicionar_item">
+                        <i class="fas fa-cart-plus text-yellow-400 mr-2"></i> adicionar_item
+                    </div>
+
+                    <div class="slash-command-item bg-black/20 hover:bg-black/30 p-2 rounded cursor-pointer" data-command="/deletar_item">
+                        <i class="fas fa-trash-alt text-red-400 mr-2"></i> deletar_item
+                    </div>
+
+                    <div class="slash-command-item bg-black/20 hover:bg-black/30 p-2 rounded cursor-pointer" data-command="/deletar_inventario">
+                        <i class="fas fa-trash text-red-500 mr-2"></i> deletar_inventario
+                    </div>
+                </div>
+                <div class="chat-messages h-96 overflow-y-auto p-5 space-y-6 text-sm" id="chatMessages">
+                    <!-- JS coloca mensagem aqui -->
+                </div>
+                <div class="chat-input-container p-4 bg-[#202225] border-t border-white/5">
+                    <div class="slash-command-hint text-xs text-indigo-400 mb-2" id="slashHint">
+                        Comece digitando / para ver comandos disponíveis
+                    </div>
+
+                    <form class="chat-input-wrapper flex gap-2" id="chatForm">
+                        <input type="text"
+                               class="chat-input flex-1 bg-[#383a40] p-3 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"
+                               id="messageInput"
+                               placeholder="Digite uma mensagem ou comando..."
+                               autocomplete="off">
+                        <button type="submit"
+                                class="send-button bg-gradient-to-r from-indigo-600 to-indigo-500 hover:scale-105 transition px-6 rounded-lg font-semibold shadow-lg shadow-indigo-600/30">
+                            Enviar
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="inventory-display bg-gradient-to-br from-purple-700/10 to-purple-900/10 border border-purple-500/20 rounded-xl p-5 text-gray-300" id="inventoryDisplay">
+                <div class="no-items">Nenhum inventário criado ainda.</div>
+            </div>
+
+        </main>
+<aside class="sidebar space-y-6">
+
+    <div class="card bg-gradient-to-br from-[#1e2127] to-[#181a1f] border border-indigo-500/10 rounded-xl p-5 shadow-lg">
+        <h3 class="text-indigo-400 font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-terminal"></i> Comandos Rápidos
+        </h3>
+
+        <div class="space-y-2 text-sm">
+
+            <div class="command-example cursor-pointer bg-black/20 hover:bg-indigo-600/20 p-2 rounded transition"
+                 data-command="/criar_inventario Aragorn">
+                /criar_inventario Aragorn
+            </div>
+
+            <div class="command-example cursor-pointer bg-black/20 hover:bg-indigo-600/20 p-2 rounded transition"
+                 data-command="/adicionar_item Espada Longa 1">
+                /adicionar_item Espada Longa 1
+            </div>
+
+            <div class="command-example cursor-pointer bg-black/20 hover:bg-indigo-600/20 p-2 rounded transition"
+                 data-command="/adicionar_item Poção de Cura 3">
+                /adicionar_item Poção de Cura 3
+            </div>
+
+            <div class="command-example cursor-pointer bg-black/20 hover:bg-indigo-600/20 p-2 rounded transition"
+                 data-command="/ver_inventario">
+                /ver_inventario
+            </div>
+
+            <div class="command-example cursor-pointer bg-black/20 hover:bg-indigo-600/20 p-2 rounded transition"
+                 data-command="/deletar_item Poção de Cura">
+                /deletar_item Poção de Cura
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-gradient-to-br from-[#1e2127] to-[#181a1f] border border-purple-500/10 rounded-xl p-5 shadow-lg">
+        <h3 class="text-purple-400 font-semibold mb-4 flex items-center gap-2">
+            <i class="fas fa-dice-d20"></i> Rolagens Rápidas
+        </h3>
+
+        <div class="grid grid-cols-2 gap-2 text-sm">
+            <button class="dice-btn bg-black/20 hover:bg-purple-600/30 p-2 rounded transition" data-roll="d20">d20</button>
+            <button class="dice-btn bg-black/20 hover:bg-purple-600/30 p-2 rounded transition" data-roll="d100">d100</button>
+            <button class="dice-btn bg-black/20 hover:bg-purple-600/30 p-2 rounded transition" data-roll="2d6+3">2d6+3</button>
+            <button class="dice-btn bg-black/20 hover:bg-purple-600/30 p-2 rounded transition" data-roll="4d6">4d6</button>
+        </div>
+    </div>
+    <div class="card bg-gradient-to-br from-[#1e2127] to-[#181a1f] border border-indigo-500/10 rounded-xl p-5 shadow-lg">
+        <h3 class="text-indigo-400 font-semibold mb-4 flex items-center gap-2">Achou interessante?</h3>
+        <p class="pb-2">Adicione-me ao seu servidor para a experiencia completa!</p>
+        <button class="bg-green-900 hover:bg-purple-600/30 p-2 rounded transition">Adicione-me</button>
+    </div>
+
+</aside>
+
+    </div>
+</div>
+
+<script src="script.js" defer></script>
+</body>
+<style>
+.message {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.bot-message .message-avatar {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+}
+
+.user-message .message-avatar {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    width: 80px;
+}
+</style>
+
+</html>
